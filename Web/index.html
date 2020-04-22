@@ -1,0 +1,421 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Arduino Power Board</title>
+    <link href="css/styles.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet"
+        crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js"
+        crossorigin="anonymous"></script>
+        <style>
+            .equal .card-body{
+                min-height: 200px;
+                margin: 0 auto;
+                line-height: 200px;
+            }
+            .equal .text-white{
+                color: #000!important;
+            }
+            .equal h1, .equal span {
+                display: inline-block;
+                font-size: 4rem;
+                line-height: 4rem;
+            }
+            .blub {
+                width: 150px;
+                filter: invert(46%) sepia(74%) saturate(1320%) hue-rotate(320deg) brightness(97%) contrast(96%);
+            }
+            .blub.active{
+                filter: invert(99%) sepia(13%) saturate(5962%) hue-rotate(308deg) brightness(132%) contrast(84%);
+
+            }
+            .temp .card-body sub,
+            .humidy .card-body sub,
+            .lux .card-body sub{
+                top: 4em!important;
+                vertical-align: top!important;
+            }
+            iframe.lab-frame {
+                width: 100%;
+                height: 700px;
+            }
+        </style>
+</head>
+
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.html">APW</a><button
+            class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i
+                class="fas fa-bars"></i></button><!-- Navbar Search-->
+        <!-- Navbar-->
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Core</div>
+                        <a class="nav-link" href="index.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    Arduino Power Board
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid">
+                    <h1 class="mt-4">Dashboard</h1>
+                    <ol class="breadcrumb mb-4" data-toggle="collapse" data-target="#demo" >
+                        <li class="breadcrumb-item active">Settings</li>
+                    </ol>
+                    <div id="demo" class="collapse">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-5">
+                                <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Settings</h3></div>
+                                    <div class="card-body">
+                                        <form>
+                                            <div class="form-group"><label class="small mb-1" for="inputArduinoIp">Arduino URL</label><input
+                                                    class="form-control py-4" id="inputArduinoIp" type="text" placeholder="Enter arduino ip"
+                                                    value="http://192.168.50.141/" />
+                                                <input type="hidden" id="inputArduinoIpH" value="http://192.168.50.141/"></div>
+                                            <div class="form-group"><label class="small mb-1" for="inputTemperature">Temperature</label><input
+                                                class="form-control py-4" id="inputTemperature" type="text" placeholder="Enter temperature trashold"
+                                                value="22" />
+                                                <input type="hidden" id="inputTemperatureH" value="18">
+                                            </div>
+                                            <div class="form-group"><label class="small mb-1" for="inputHumidity">Humidity</label><input
+                                                class="form-control py-4" id="inputHumidity" type="text" placeholder="Enter humidity trashold"
+                                                value="35" />
+                                                <input type="hidden" id="inputHumidityH" value="25">
+                                            </div>
+                                            <div class="form-group"><label class="small mb-1" for="inputLux">Lux</label><input
+                                                class="form-control py-4" id="inputLux" type="text" placeholder="Enter lux trashold"
+                                                value="15" />
+                                                <input type="hidden" id="inputLuxH" value="15">
+                                            </div>
+                                            <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
+                                                <a class="btn btn-primary save" href="#">Save</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="card-footer text-center">
+                                        <div class="small arduinoStatus"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>.
+                    </div>
+                    <div class="row equal">
+                        <div class="col-xl-3 col-md-3">
+                            <div class="lamp card  text-white mb-4">
+                                <div class="lamp-body card-body"><img class="blub" src="assets/img/light-bulb-off.svg"></div>
+                                <div class="roride card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="#">Lamp</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-3">
+                            <div class="lux  card  mb-4">
+                                <div class="card-body"><span class="text-lux">3</span><sub>lux</sub></div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="#">Lux</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-3">
+                            <div class="temp card mb-4">
+                                <div class="card-body"><span class="text-temp">1</span><sub>&#8451</sub></div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="#">Temperature</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-3">
+                            <div class="humidy card   mb-4">
+                              <div class="card-body"><span class="text-humidity">2</span><sub>%RH</sub></div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="#">Humidity</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <div class="card mb-12">
+                                <div class="card-header"><i class="fas fa-chart-area mr-1"></i>Timeseries last 24 hours</div>
+                                <div class="card-body"><iframe class="lab-frame" src="https://dev-lab.klinkplatform.com/app/kibana?security_tenant=bb28ef0c5afa4b368104afeb7e0e5c24#/dashboard/e7504470-8349-11ea-b2d7-e328cb0cdc85?embed=true&_g=(refreshInterval:(pause:!f,value:30000),time:(from:now-24h,to:now))"></iframe></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; Your Website 2019</div>
+                        <div>
+                            <a href="#">Privacy Policy</a>
+                            &middot;
+                            <a href="#">Terms &amp; Conditions</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="js/scripts.js"></script>
+    <script>
+        $(document).ready(function () {
+            var arduino = true;
+            function setRequest(data){
+              
+
+                jQuery.ajax({
+                    url: getArduinoIp(),
+                    type: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    processData: false,
+                    data: data,
+                    dataType: 'json',
+                    async: false,
+                    success: function (data) {
+                        console.log(data);
+                        jQuery(".arduinoStatus").text("Arduino found");
+
+                        refreshGui(data);
+                    },
+                    error: function(e){
+                        jQuery(".arduinoStatus").text("Arduino not found");
+                    }
+                });
+            }
+            function fetchData(){
+                jQuery.ajax({
+                    url: getArduinoIp(),
+                    type: 'POST',
+                    dataType: 'json',
+                    timeout: 3000, // sets timeout to 3 seconds
+                    success: function (data) {
+                        console.log(data);
+                        jQuery(".arduinoStatus").text("Arduino found");
+                        refreshGui(data);
+                        
+                    },
+                    error: function(e){
+                        jQuery(".arduinoStatus").text("Arduino not found");
+                    }
+                });
+            }
+            function getArduinoIp(){
+                return jQuery("#inputArduinoIp").val();
+            }
+            function getLuxValue(){
+                return jQuery("#inputLux").val();
+            }
+            jQuery('.save').click(function(e){
+                e.preventDefault();
+                if(jQuery("#inputArduinoIp").val() === jQuery("#inputArduinoIpH").val() && jQuery("#inputLux").val() === jQuery("#inputLuxH").val() ){
+                    var humidity = jQuery(".humidy");
+                    var humidityText = jQuery(".text-humidity");
+                    var humidityFooter = humidity.find('.card-footer');
+                    var humidityTrashold = jQuery("#inputHumidity").val();
+                    jQuery("#inputHumidity").val(humidityTrashold);
+                    jQuery("#inputHumidityH").val(humidityTrashold);
+                    humidityFooter.text("Humidity trashold: " + humidityTrashold);
+
+                    if(jQuery(".text-humidity").text()  < humidityTrashold){
+                        humidity.addClass("bg-success");
+                        humidity.removeClass("bg-danger");
+                    }else{
+                        humidity.addClass("bg-danger");
+                        humidity.removeClass("bg-success");
+                    }
+                    var temp = jQuery(".temp");
+                    var tempText = jQuery(".text-temp");
+                    var tempFooter = temp.find('.card-footer');
+                    var tempTrashold = jQuery("#inputTemperature").val();
+                    jQuery("#inputTemperature").val(tempTrashold);
+                    jQuery("#inputTemperatureH").val(tempTrashold);
+                    tempFooter.text("Temperature trashold: " + tempTrashold);
+
+                    if(jQuery(".text-temp").text() < tempTrashold){
+                        temp.addClass("bg-success");
+                        temp.removeClass("bg-danger");
+                    }else{
+                        temp.addClass("bg-danger");
+                        temp.removeClass("bg-success");
+                    }
+
+                }else{
+                    jQuery(".arduinoStatus").text("Contacting arduino");
+                    setRequest("l=" + String.fromCharCode(getLuxValue()));
+                    setTimeout(function(){
+                        jQuery(".breadcrumb").click();
+                    }, 1000);
+
+                }
+                
+            });
+            function refreshGui(data){
+                var lamp = jQuery(".lamp");
+                var blub = jQuery(".blub");
+                var temp = jQuery(".temp");
+
+                var tempText = jQuery(".text-temp");
+                var tempFooter = temp.find('.card-footer');
+                var tempTrashold = jQuery("#inputTemperature").val();
+                jQuery("#inputTemperature").val(tempTrashold);
+                jQuery("#inputTemperatureH").val(tempTrashold);
+                tempFooter.text("Temperature trashold: " + tempTrashold);
+
+                if(data.temperature < tempTrashold){
+                    temp.addClass("bg-success");
+                    temp.removeClass("bg-danger");
+                }else{
+                    temp.addClass("bg-danger");
+                    temp.removeClass("bg-success");
+                }
+                var humidity = jQuery(".humidy");
+                var humidityText = jQuery(".text-humidity");
+                var humidityFooter = humidity.find('.card-footer');
+                var humidityTrashold = jQuery("#inputHumidity").val();
+                jQuery("#inputHumidity").val(humidityTrashold);
+                jQuery("#inputHumidityH").val(humidityTrashold);
+                humidityFooter.text("Humidity trashold: " + humidityTrashold);
+
+                if(data.humidity < humidityTrashold){
+                    humidity.addClass("bg-success");
+                    humidity.removeClass("bg-danger");
+                }else{
+                    humidity.addClass("bg-danger");
+                    humidity.removeClass("bg-success");
+                }
+
+
+                var lux = jQuery(".lux");
+                var luxText = jQuery(".text-lux");
+                var luxFooter = lux.find('.card-footer');
+                var luxTrashold = data.luxt;
+                jQuery("#inputLux").val(luxTrashold);
+                jQuery("#inputLuxH").val(luxTrashold);
+                luxFooter.text("Lux trashold: " + luxTrashold);
+
+                if(data.lux > luxTrashold){
+                    lux.addClass("bg-success");
+                    lux.removeClass("bg-danger");
+                }else{
+                    lux.addClass("bg-danger");
+                    lux.removeClass("bg-success");
+                }
+
+                
+                tempText.text(data.temperature)
+                humidityText.text(data.humidity)
+                luxText.text(data.lux)
+
+                if(data.relay){
+                    lamp.addClass('bg-success');
+                    lamp.removeClass('bg-danger');
+                    blub.addClass('active');
+                    blub.attr("src", "assets/img/light-bulb-on.svg");
+                }else{
+                    lamp.addClass('bg-danger');
+                    lamp.removeClass('bg-success');
+                    blub.removeClass('active');
+                    blub.attr("src", "assets/img/light-bulb-off.svg");
+                }
+                if(!data.roride){
+                    var footer = lamp.find('.roride');
+                    footer.addClass("bg-success");
+                    footer.removeClass("bg-danger");
+                    footer.text("Override off");
+
+                }else{
+                    var footer = lamp.find('.roride');
+                    footer.removeClass("bg-success");
+                    footer.addClass("bg-danger");
+                    footer.text("Override on");
+
+                }
+            }
+            if(!arduino)
+            return;
+            
+            fetchData();
+            jQuery(".lamp-body").click(function () {
+                var footer = jQuery('.lamp').find('.roride');
+                var override = footer.hasClass('bg-success');
+
+                if(override){
+                    return;
+                }
+                var params = {
+                    r: 1
+                };
+
+                jQuery.ajax({
+                    url: getArduinoIp(),
+                    type: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    processData: false,
+                    data: "r=1",
+                    dataType: 'json',
+                    async: false,
+                    success: function (data) {
+                        console.log(data);
+                        refreshGui(data);
+                    }
+                });
+            });
+
+            jQuery(".roride").click(function () {
+                var params = {
+                    r: 1
+                };
+
+                jQuery.ajax({
+                    url: getArduinoIp(),
+                    type: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    processData: false,
+                    data: "o=1",
+                    dataType: 'json',
+                    async: false,
+                    success: function (data) {
+                        console.log(data);
+                        refreshGui(data);
+                    }
+                });
+            });
+
+
+
+        });
+
+    </script>
+</body>
+
+</html>

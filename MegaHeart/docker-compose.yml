@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  megaheart: 
+    container_name: megaheart
+    image: mssba/megaheart:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
