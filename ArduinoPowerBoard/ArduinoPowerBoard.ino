@@ -158,6 +158,26 @@ void formatJsonPrint(char *labels[], float values[], int max)
   Serial.println('}');
 }
 
+
+void formatJsonSendJSON(char *labels[], float values[], int max)
+{
+
+  String data = "";
+  data += "{\"";
+  for (int i = 0; i < max; i++)
+  {
+    data += (labels[i]);
+    data += "\":";
+    data += (values[i]);
+    if (i != max - 1)
+    {
+      data += ",\"";
+    }
+  }
+  data += '}';
+  sendRequest(data);
+}
+
 /**
    Send arduino status to a connected client.
 
@@ -260,7 +280,7 @@ void activateEthernet()
       Serial.println("Activating server");
       ethServer.begin();
       // give the Ethernet Web Server a second to initialize:
-      delay(1000);
+      delay(5000);
     }
   }
 }
@@ -276,15 +296,17 @@ void sendRequest(String data)
 {
 
   Serial.println("=== Send request ===");
-  if (client.connect(server, serverPort))
+ if (client.connect("dev-httpsgw.klinkplatform.com", 80))
   {
     Serial.print("Connected to ");
     Serial.println(client.remoteIP());
     // Make a HTTP request:
-    client.println("POST /arduinomega HTTP/1.1");
-    client.println("Host: 192.168.50.50");
-    client.println("Content-Type: application/x-www-form-urlencoded");
+    client.println("POST /api/DeviceMessages HTTP/1.1");
+    client.println("Host: dev-httpsgw.klinkplatform.com");
+    client.println("Content-Type: application/json");
     client.println("User-Agent: curl/7.55.1");
+    client.println("OrganizationId: 2744bea7-8f6d-4fb6-b47d-89544223b5d8");
+    client.println("DeviceId: ThisIsID");
     client.println("Accept: */*");
     client.print("Content-Length: ");
     client.println(data.length());
@@ -391,6 +413,7 @@ void handleWebRequest()
 void setup()
 {
 
+
   Serial.begin(9600);
   printConfig();
   if (MOD_RELAY)
@@ -401,6 +424,25 @@ void setup()
   configureLuxSensor();
   activateEthernet();
   startMillis = millis(); //initial start time
+
+  
+  cli();//stop interrupts
+
+  //set timer4 interrupt at 1Hz
+  TCCR4A = 0;// set entire TCCR1A register to 0
+  TCCR4B = 0;// same for TCCR1B
+  TCNT4  = 0;//initialize counter value to 0
+  // set compare match register for 1hz increments
+  OCR4A = 62499;// = (16*10^6) / (1*1024) - 1 (must be <65536)
+  // turn on CTC mode
+  TCCR4B |= (1 << WGM12);
+  // Set CS12 and CS10 bits for 1024 prescaler
+  TCCR4B |= (1 << CS12) | (1 << CS10);  
+  // enable timer compare interrupt
+  TIMSK4 |= (1 << OCIE4A);
+
+  sei();//allow interrupts
+
 }
 
 /**
@@ -522,10 +564,26 @@ int getValuesMaxSize()
   return sizeof(VALUES) / arrayBytes;
 }
 
-bool firstLoop = true;
+ bool firstLoop = true;
+
+ISR(TIMER4_COMPA_vect){
+
+  sei();//allow interrupts
+
+    if(DEBUG){
+      Serial.println("TT");
+    }
+    refreshParams();
+//    handleLamp(getValue("lux"));
+}
+ 
+
 void loop()
 {
+   formatJsonSendJSON(PROPERTIES, VALUES, getValuesMaxSize());
 
+
+  
   //  formatJsonPrint(properties, VALUES, getValuesMaxSize());
   //  handleSerial();
   //  handleLamp(luxEvent.light);
@@ -536,14 +594,12 @@ void loop()
       firstLoop = false;
     }
     /* Get a new sensor values */
-    refreshParams();
-
-    handleLamp(getValue("lux"));
-
     if (ethernetActivated && MOD_ETH_SEND_DATA)
     {
       Serial.println("Sending data");
-      formatSendForm(PROPERTIES, VALUES, getValuesMaxSize());
+//      formatSendForm(PROPERTIES, VALUES, getValuesMaxSize());
+//        formatJsonSendJSON(PROPERTIES, VALUES, getValuesMaxSize());
+//
     }
 
     if (!ethernetActivated && DEBUG)
